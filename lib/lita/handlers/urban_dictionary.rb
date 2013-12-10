@@ -14,23 +14,23 @@ module Lita
       )
 
       def define(response)
-        requested_word = response.matches[0][0]
-        word, definition, example = fetch_definition(requested_word)
+        term = response.matches[0][0]
+        word, definition, example = fetch_definition(term)
         if word
           message = "#{word}: #{definition}"
           message << "\nExample: #{example}" if example
           response.reply(message)
         else
-          response.reply("No definition found for #{requested_word}.")
+          response.reply("No definition found for #{term}.")
         end
       end
 
       private
 
-      def fetch_definition(requested_word)
+      def fetch_definition(term)
         http_response = http.get(
           "http://api.urbandictionary.com/v0/define",
-          term: URI.escape(requested_word)
+          term: term
         )
 
         if http_response.status == 200
