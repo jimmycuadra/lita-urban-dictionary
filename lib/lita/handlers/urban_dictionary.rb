@@ -17,8 +17,9 @@ module Lita
         term = response.matches[0][0]
         word, definition, example = fetch_definition(term)
         if word
-          message = "#{word}: #{definition}"
-          message << "\nExample: #{example}" if example
+          lines = "#{word}: #{definition}".split("\n")
+          lines << "Example: #{example}" if example
+          message = message_from_lines(lines, term)
           response.reply(message)
         else
           response.reply("No definition found for #{term}.")
@@ -40,6 +41,17 @@ module Lita
             [item["word"], item["definition"], item["example"]]
           end
         end
+      end
+
+      def message_from_lines(lines, term)
+        if lines.size > 20
+          lines = lines[0..19]
+          lines << <<-TRUNCATION_MESSAGE.chomp
+Read the entire definition at: http://www.urbandictionary.com/define.php?term=#{URI.encode(term)}
+          TRUNCATION_MESSAGE
+        end
+
+        lines.join("\n")
       end
     end
 

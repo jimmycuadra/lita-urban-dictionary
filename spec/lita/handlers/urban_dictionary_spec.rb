@@ -22,6 +22,16 @@ curtain?","thumbs_up":565,"thumbs_down":141,"current_vote":""}]}}
 earth.","thumbs_up":565,"thumbs_down":141,"current_vote":""}]}}
     end
 
+    let(:json_large) do
+      %Q{{"list":[{"defid":1369633,"word":"robot","author":"Ralius","permalink"\
+:"http://robot.urbanup.com/1369633","definition":"#{large_string}","thumbs_up":565,\
+"thumbs_down":141,"current_vote":""}]}}
+    end
+
+    let(:large_string) do
+      30.times.map { |n| "#{n}" }.join("\\n")
+    end
+
     before do
       allow_any_instance_of(Faraday::Connection).to receive(:get)
     end
@@ -45,6 +55,14 @@ DEF
       )
       send_command("ud robot")
       expect(replies.last).to eq("robot: scariest fucking thing on earth.")
+    end
+
+    it "truncates responses at 20 lines" do
+      response = double("Faraday::Response", status: 200, body: json_large)
+      allow_any_instance_of(Faraday::Connection).to receive(:get).and_return(response)
+      send_command("ud lita bot")
+      expect(replies.last.split("\n").size).to eq(21)
+      expect(replies.last).to include("http://www.urbandictionary.com/define.php?term=lita%20bot")
     end
 
     it "responds with a warning if no definition was found" do
