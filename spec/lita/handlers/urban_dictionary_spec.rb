@@ -1,12 +1,12 @@
 require "spec_helper"
 
 describe Lita::Handlers::UrbanDictionary, lita_handler: true do
-  it { routes_command("ud foo").to(:define) }
-  it { routes_command("ud me foo").to(:define) }
-  it { routes_command("urbandictionary foo").to(:define) }
-  it { routes_command("urbandictionary me foo").to(:define) }
-  it { routes_command("urban dictionary foo").to(:define) }
-  it { routes_command("urban dictionary me foo").to(:define) }
+  it { is_expected.to route_command("ud foo").to(:define) }
+  it { is_expected.to route_command("ud me foo").to(:define) }
+  it { is_expected.to route_command("urbandictionary foo").to(:define) }
+  it { is_expected.to route_command("urbandictionary me foo").to(:define) }
+  it { is_expected.to route_command("urban dictionary foo").to(:define) }
+  it { is_expected.to route_command("urban dictionary me foo").to(:define) }
 
   describe "#define" do
     let(:json) do
