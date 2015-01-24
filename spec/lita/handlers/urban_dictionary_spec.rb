@@ -24,12 +24,18 @@ earth.","thumbs_up":565,"thumbs_down":141,"current_vote":""}]}}
 
     let(:json_large) do
       %Q{{"list":[{"defid":1369633,"word":"robot","author":"Ralius","permalink"\
-:"http://robot.urbanup.com/1369633","definition":"#{large_string}","thumbs_up":565,\
-"thumbs_down":141,"current_vote":""}]}}
+:"http://robot.urbanup.com/1369633","definition":"#{large_string}","example":\
+"#{large_string}","thumbs_up":565,"thumbs_down":141,"current_vote":""}]}}
+    end
+
+    let(:json_large_example) do
+      %Q{{"list":[{"defid":1369633,"word":"robot","author":"Ralius","permalink"\
+:"http://robot.urbanup.com/1369633","definition":"scariest fucking thing on earth.","example":\
+"#{large_string}","thumbs_up":565,"thumbs_down":141,"current_vote":""}]}}
     end
 
     let(:large_string) do
-      30.times.map { |n| "#{n}" }.join("\\n")
+      30.times.map { |n| "#{n}" }.join("\\r\\n")
     end
 
     before do
@@ -57,8 +63,16 @@ DEF
       expect(replies.last).to eq("robot: scariest fucking thing on earth.")
     end
 
-    it "truncates responses at 20 lines" do
+    it "truncates responses at 20 lines when the definition is very long" do
       response = double("Faraday::Response", status: 200, body: json_large)
+      allow_any_instance_of(Faraday::Connection).to receive(:get).and_return(response)
+      send_command("ud lita bot")
+      expect(replies.last.split("\n").size).to eq(21)
+      expect(replies.last).to include("http://www.urbandictionary.com/define.php?term=lita%20bot")
+    end
+
+    it "truncates responses at 20 lines when the example is very long" do
+      response = double("Faraday::Response", status: 200, body: json_large_example)
       allow_any_instance_of(Faraday::Connection).to receive(:get).and_return(response)
       send_command("ud lita bot")
       expect(replies.last.split("\n").size).to eq(21)

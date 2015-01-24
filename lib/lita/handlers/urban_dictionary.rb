@@ -17,8 +17,12 @@ module Lita
         term = response.matches[0][0]
         word, definition, example = fetch_definition(term)
         if word
-          lines = "#{word}: #{definition}".split("\n")
-          lines << "Example: #{example}" if example
+          lines = "#{word}: #{definition}".split(/\r?\n/)
+          if example
+            example_lines = example.split(/\r?\n/)
+            example_lines[0] = "Example: #{example_lines.first}"
+            lines.concat(example_lines)
+          end
           message = message_from_lines(lines, term)
           response.reply(message)
         else
