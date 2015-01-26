@@ -50,10 +50,10 @@ module Lita
       end
 
       def determine_max_size(lines)
-        unless config.max_response_size.nil?
-          max_size = config.max_response_size - 1
-        else 
+        if config.max_response_size.nil?
           max_size = lines.size
+        else
+          max_size = config.max_response_size - 1
         end
         max_size
       end
