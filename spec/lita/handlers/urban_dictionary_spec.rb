@@ -96,5 +96,23 @@ DEF
       send_command("ud bar")
       expect(replies.last).to eq("No definition found for bar.")
     end
+
+    it "truncates responses according to the user-defined max_repsonse_size in the handler config" do
+      registry.config.handlers.urban_dictionary.max_response_size = 10
+      response = double("Faraday::Response", status: 200, body: json_large)
+      allow_any_instance_of(Faraday::Connection).to receive(:get).and_return(response)
+      send_command("ud lita bot")
+      expect(replies.last.split("\n").size).to eq(11)
+      expect(replies.last).to include("http://www.urbandictionary.com/define.php?term=lita%20bot")
+    end
+
+    it "does not truncate responses if the user-defined max_repsonse_size is set to nil" do
+      registry.config.handlers.urban_dictionary.max_response_size = nil
+      response = double("Faraday::Response", status: 200, body: json_large)
+      allow_any_instance_of(Faraday::Connection).to receive(:get).and_return(response)
+      send_command("ud lita bot")
+      expect(replies.last.split("\n").size).to eq(60)
+    end
+
   end
 end

@@ -4,6 +4,8 @@ module Lita
   module Handlers
     # Looks up words on Urban Dictionary.
     class UrbanDictionary < Handler
+      config :max_response_size, types: [Integer, nil], default: 20
+
       route(
         /^(?:ud|urban\s*dictionary)(?:\s+me)? (.+)/,
         :define,
@@ -47,9 +49,19 @@ module Lita
         end
       end
 
+      def determine_max_size(lines)
+        if config.max_response_size.nil?
+          max_size = lines.size
+        else
+          max_size = config.max_response_size - 1
+        end
+        max_size
+      end
+
       def message_from_lines(lines, term)
-        if lines.size > 20
-          lines = lines[0..19]
+        max_size = determine_max_size(lines)
+        if lines.size > max_size
+          lines = lines[0..max_size]
           lines << <<-TRUNCATION_MESSAGE.chomp
 Read the entire definition at: http://www.urbandictionary.com/define.php?term=#{URI.encode(term)}
           TRUNCATION_MESSAGE
