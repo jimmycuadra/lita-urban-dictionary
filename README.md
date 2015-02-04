@@ -18,7 +18,7 @@ gem "lita-urban-dictionary"
 
 ### Optional attributes
 
-* **max_response_size** (`Integer` || `nil`) - Sets a ceiling on the response size of the queried defintion. Default: `20` (20 lines of text).  `nil` will set no ceiling on responses.
+* **max_response_size** (`Integer`, `nil`) - Sets a ceiling on the response size of the queried defintion, or `nil` for no limit.. Default: `20`.
 
 ### Example
 
@@ -30,7 +30,6 @@ Lita.configure do |config|
 end
 ```
 
->>>>>>> d050f60... Add max_response_size to config, add corresponding tests, handle case of nil values, document chages in README.
 ## Usage
 
 To get the definition of a word:
